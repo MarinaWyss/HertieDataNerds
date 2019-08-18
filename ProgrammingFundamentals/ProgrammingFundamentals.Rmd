@@ -1,0 +1,247 @@
+---
+title: "Programming Fundamentals"
+author: "Marina Wyss"
+date: "8/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Agenda
+* Data types
+    * Numeric/integers
+    * Strings
+    * Booleans
+    * Factors
+    * Vectors
+    * Matricies
+    * Data frames
+    * Lists
+* Comparison Operators
+* Logical Operators
+* if, else if, else statements
+* for loops
+* while loops
+* functions
+* Exercises
+* Solutions
+
+<i> Some examples in this worksheet are inspired by Pierian Data's Python and R courses on Udemy.</i>
+
+### numeric/integers
+Numerics: can be whole numbers or doubles/floats with decimals
+Integers: only whole numbers, though often R just considers them numerics
+Often the distinction isn't really important.
+```{r}
+# numeric
+four <- 2 + 2
+class(four)
+
+flo <- 2.5 - 1.7
+class(flo)
+
+# include L at the end to tell R it's an integer and not normal numeric
+fourInt <- 2L + 2L
+class(fourInt)
+```
+
+### strings
+Can use single or double quotes.
+Can be characters or numeric, but will be stored as characters.
+```{r}
+hi <- "Hello world"
+class(hi)
+
+numString <- "12345"
+class(numString)
+```
+
+### booleans
+True/false. Must be in caps. Can be either the whole word or just T/F, though the whole word is better form.
+```{r}
+TRUE
+T
+
+FALSE
+F
+```
+
+### factors
+Categorical variables.
+```{r}
+# variable gender with 10 "male" entries and 10 "female" entries 
+gender <- c(rep("male", 10), rep("female", 10)) 
+gender <- factor(gender) 
+
+# or as one line
+gender <- as.factor(c(rep("male", 10), rep("female", 10)))
+
+str(gender)
+
+# can also create an ordered factor for ordinal variables
+sizes <- c(rep("large", 10), rep("medium", 10), rep("small", 10)) 
+sizes <- ordered(sizes)
+
+str(sizes)
+```
+
+### vectors
+One-dimensional vector that must have all the same element type
+```{r}
+vec1 <- 10:50
+vec1
+
+vec2 <- rep("meow", 10)
+vec2
+```
+
+### matrices
+A matrix is a collection of data elements arranged in a two-dimensional rectangular layout. All columns in a matrix must have the same class (numeric, character, etc.) and the same length.
+```{r}
+myMat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), 
+                 nrow = 3, 
+                 ncol = 3, 
+                 byrow = TRUE)
+myMat
+```
+
+### data frames
+Basically a "spreadsheet". Two-dimensional. Key is that they can have different data types. 
+```{r}
+names <- c('Tom', 'Nick', 'Sally', 'Joe')
+ages <- c(20, 21, 19, 18)
+myData <- data.frame(ages, names)
+names(myData) <- c("Age", "Name")
+
+myData
+```
+
+### lists
+An ordered collection of objects (components). A list allows you to gather a variety of (possibly unrelated) objects under one name. For example, could have a few data frames, a matrix, etc.
+```{r}
+myList <- list(myData, myMat, vec2, sizes)
+myList
+```
+
+### Comparison Operators
+```{r}
+1 > 2
+1 < 2
+1 >= 1
+1 <= 4
+1 == 1
+'hi' == 'bye'
+```
+
+### Logical Operators
+```{r}
+# all statements must be true to return TRUE when using "and"
+(1 > 2) & (2 < 3)
+
+# only one statement must be true to return TRUE when using "or", denoted with |
+(1 > 2) | (2 < 3)
+
+(1 == 2) | (2 == 3) | (4 == 2)
+```
+
+### if, else if, else statements
+```{r}
+if (1 < 2){
+  print('yep!')
+}
+
+if (1 < 2){
+    print('first')
+} else {
+    print('last')
+}
+
+if (1 == 2){
+  print('first')
+} else if(3 == 3) {
+  print('middle')
+} else {
+  print('last')
+}
+```
+
+### for loops
+for each item, perform some action.
+```{r}
+nums <- 1:5
+
+for (item in nums){
+  print(item)
+}
+
+for (item in nums){
+  print("Yep")
+}
+
+# can use whatever word to iterate over
+for (cake in nums){
+  print(cake + cake)
+}
+```
+
+### while loops
+while loops are a way to have your program continuously run some block of code until a condition is met (or in other words, while a certain condition is true). 
+
+A major concern when working with a while loop is to make sure that at some point the condition should become true, otherwise the while loop will go forever! 
+```{r}
+i <- 1
+
+while (i < 5){
+  print(paste0("i is: ", i))
+  i <- i + 1
+}
+```
+
+### functions
+Formally, a function is a useful device that groups together a set of statements so they can be run more than once. They can also let us specify parameters that can serve as inputs to the functions.
+
+On a more fundamental level, functions allow us to not have to repeatedly write the same code again and again. 
+```{r}
+# basic structure
+functionName <- function(someInput){
+  # some action to perform
+}
+
+# example 1
+square <- function(x){
+  print(x^2)
+}
+
+square(2)
+
+# example 2
+greeting <- function(name){
+    print(paste('Hi ', name))
+}
+
+greeting("dude")
+
+# example 3
+addNum <- function(num1, num2){
+    print(num1 + num2)
+}
+addNum(5, 10)
+```
+Now, here's a more complicated example. It will return the lesser of two given numbers if both numbers are even, but returns the greater if one or both numbers are odd. <br>
+For example: 
+* lesser_of_two_evens(2, 4) would return 2
+* lesser_of_two_evens(2, 5) would return 5
+```{r}
+lesser_of_two_evens <- function(a, b){
+  if ((a %% 2) == 0 & (b %% 2) == 0){
+    print(min(a, b))
+  } else {
+    print(max(a, b))
+  }
+}
+
+lesser_of_two_evens(2, 4)
+lesser_of_two_evens(2, 5)
+```
+
