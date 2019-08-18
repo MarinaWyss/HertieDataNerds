@@ -211,8 +211,10 @@ $(document).ready(function () {
 <li>for loops</li>
 <li>while loops</li>
 <li>functions</li>
+<li>Exercises</li>
+<li>Solutions</li>
 </ul>
-<p><i> Some examples in this worksheet are heavily inspired by Pierian Data’s Python course on Udemy.</i></p>
+<p><i> Some examples in this worksheet are inspired by Pierian Data’s Python and R courses on Udemy.</i></p>
 <div id="numericintegers" class="section level3">
 <h3>numeric/integers</h3>
 <p>Numerics: can be whole numbers or doubles/floats with decimals Integers: only whole numbers, though often R just considers them numerics Often the distinction isn’t really important.</p>
@@ -384,6 +386,92 @@ myList</code></pre>
 </div>
 <div id="for-loops" class="section level3">
 <h3>for loops</h3>
+<p>for each item, perform some action.</p>
+<pre class="r"><code>nums &lt;- 1:5
+
+for (item in nums){
+  print(item)
+}</code></pre>
+<pre><code>## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5</code></pre>
+<pre class="r"><code>for (item in nums){
+  print(&quot;Yep&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Yep&quot;
+## [1] &quot;Yep&quot;
+## [1] &quot;Yep&quot;
+## [1] &quot;Yep&quot;
+## [1] &quot;Yep&quot;</code></pre>
+<pre class="r"><code># can use whatever word to iterate over
+for (cake in nums){
+  print(cake + cake)
+}</code></pre>
+<pre><code>## [1] 2
+## [1] 4
+## [1] 6
+## [1] 8
+## [1] 10</code></pre>
+</div>
+<div id="while-loops" class="section level3">
+<h3>while loops</h3>
+<p>while loops are a way to have your program continuously run some block of code until a condition is met (or in other words, while a certain condition is true).</p>
+<p>A major concern when working with a while loop is to make sure that at some point the condition should become true, otherwise the while loop will go forever!</p>
+<pre class="r"><code>i &lt;- 1
+
+while (i &lt; 5){
+  print(paste0(&quot;i is: &quot;, i))
+  i &lt;- i + 1
+}</code></pre>
+<pre><code>## [1] &quot;i is: 1&quot;
+## [1] &quot;i is: 2&quot;
+## [1] &quot;i is: 3&quot;
+## [1] &quot;i is: 4&quot;</code></pre>
+</div>
+<div id="functions" class="section level3">
+<h3>functions</h3>
+<p>Formally, a function is a useful device that groups together a set of statements so they can be run more than once. They can also let us specify parameters that can serve as inputs to the functions.</p>
+<p>On a more fundamental level, functions allow us to not have to repeatedly write the same code again and again.</p>
+<pre class="r"><code># basic structure
+functionName &lt;- function(someInput){
+  # some action to perform
+}
+
+# example 1
+square &lt;- function(x){
+  print(x^2)
+}
+
+square(2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code># example 2
+greeting &lt;- function(name){
+    print(paste('Hi ', name))
+}
+
+greeting(&quot;dude&quot;)</code></pre>
+<pre><code>## [1] &quot;Hi  dude&quot;</code></pre>
+<pre class="r"><code># example 3
+addNum &lt;- function(num1, num2){
+    print(num1 + num2)
+}
+addNum(5, 10)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<p>Now, here’s a more complicated example. It will return the lesser of two given numbers if both numbers are even, but returns the greater if one or both numbers are odd. <br> For example: * lesser_of_two_evens(2, 4) would return 2 * lesser_of_two_evens(2, 5) would return 5</p>
+<pre class="r"><code>lesser_of_two_evens &lt;- function(a, b){
+  if ((a %% 2) == 0 &amp; (b %% 2) == 0){
+    print(min(a, b))
+  } else {
+    print(max(a, b))
+  }
+}
+
+lesser_of_two_evens(2, 4)</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>lesser_of_two_evens(2, 5)</code></pre>
+<pre><code>## [1] 5</code></pre>
 </div>
 </div>
 
