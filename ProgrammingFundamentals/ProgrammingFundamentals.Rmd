@@ -253,4 +253,93 @@ lesser_of_two_evens <- function(a, b){
 lesser_of_two_evens(2, 4)
 lesser_of_two_evens(2, 5)
 ```
+## Exercises:
+Now we're going to practice a bit! Here are some tasks:
+<ol>
+<li> Write a script that prints "Hello" if the variable X is equal to 1</li>
+<li> Write a script that prints "Even Number" if the variable X is an even number, otherwise prints "Not Even"</li>
+<li> White a script that prints the numbers 1 through 10 using a for loop. </li>
+<li> White a script that prints the numbers 1 through 10 using a while loop. </li>
+<li> Create a function that takes in a name as a string argument, and prints out "Hello name"</li>
+<li> Create a function that will return the product of two integers.</li>
+<li> Challenge one: Create a function that will return TRUE if an input integer is prime. Otherwise, return FALSE. </li>
+</ol>
 
+## Solutions
+
+### 1
+```{r}
+x <- 1
+
+if (x ==1){
+    print("Hello")
+}
+```
+
+### 2
+```{r}
+x <- 3 # change x to test
+
+if (x %% 2 == 0){
+    print('Even Number')
+}else{
+    print('Not Even')
+}
+```
+
+### 3
+```{r}
+x <- 1
+
+for (i in 1:10){
+  print(x)
+  x <- x + 1
+}
+
+```
+### 4
+```{r}
+counter <- 1
+
+while(counter < 11){
+	print(counter)
+	counter <- counter + 1
+}
+
+```
+### 5
+```{r}
+helloYou <- function(name){
+    print(paste('Hello',name))
+}
+
+helloYou("Jerry")
+```
+### 6
+```{r}
+prod <- function(num1, num2){
+    return(num1 * num2)
+}
+
+prod(3, 4)
+```
+### 7
+```{r}
+primeCheck <- function(num){
+  # Could put more checks for negative numbers etc...
+  if (num == 2) {
+    return(TRUE)
+  }
+  for (x in 2:(num - 1)){
+      
+    if ((num %% x) == 0){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+primeCheck(2)
+primeCheck(8)
+primeCheck(11)
+```
