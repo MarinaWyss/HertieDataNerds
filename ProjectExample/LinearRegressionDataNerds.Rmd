@@ -1,7 +1,5 @@
 ---
 title: "Linear Regression - Example Project"
-author: "Marina Wyss"
-date: "8/17/2019"
 output: html_document
 ---
 
@@ -18,23 +16,23 @@ library(stargazer)
 ```
 # Scenario
 
-Imagine that you've just got some contract work with an e-commerce company that sells clothing online, but they also have in-store style and clothing advice sessions. Customers come in to the store, have sessions/meetings with a personal stylist, then they can go home and order either on a mobile app or website for the clothes they want.
+Imagine that you've just got some contract work with an e-commerce company that sells clothing online, but they also have in-store style and clothing advice sessions. Customers come in to the store, have sessions/meetings with a personal stylist, then they can go home and order the clothes they want either on a mobile app or website.
 
 The company is trying to decide whether to focus their efforts on their mobile app experience or their website. 
 
 <i>The data is obviously fake, and this example is heavily inspired by Pierian Data's Python course on Udemy.</i>
 
 ## Get the Data & Take a Look
-```{r data}
+```{r data, message=FALSE}
 # read in the Ecommerce Customers csv file as a DataFrame called customers.
 customers <- read_csv("EcommerceCustomers")
 ```
 We'll work with an Ecommerce Customers csv file from the company. It has customer info, such as email, address, and their color avatar. Then it also has numerical value columns:
 
-* Avg. Session Length: Average session of in-store style advice sessions.
+* Avg. Session Length: Average session length of in-store style advice sessions in minutes
 * Time on App: Average time spent on the app in minutes
 * Time on Website: Average time spent on the website in minutes
-* Length of Membership: How many years the customer has been a member. 
+* Length of Membership: How many years the customer has been a member
 
 ```{r exploring the data}
 head(customers)
@@ -42,9 +40,13 @@ summary(customers)
 str(customers)
 ```
 
-```{r any null}
+```{r any null, message=FALSE, warning=FALSE}
 # checking if we have any NA values
 any(is.na(customers))
+
+# a cool way to visualize this is with a missingness map, here's an example
+library(Amelia)
+missmap(airquality)
 ```
 
 ## Data Manipulation/Clean-up
@@ -88,7 +90,10 @@ customers$timeOnApp <- ifelse(customers$`Gender` == 'Male',
        customers$timeOnApp)
 
 # checking that it worked
-kable(customers %>% group_by(Gender) %>% summarise_all("mean")) %>% kable_styling()
+kable(customers %>% 
+        group_by(Gender) %>% 
+        summarise_all("mean")) %>%
+        kable_styling()
 ```
 
 
@@ -96,13 +101,25 @@ kable(customers %>% group_by(Gender) %>% summarise_all("mean")) %>% kable_stylin
 We want to plot our data to check some assumptions, or if there are things we need to be aware of.
 ```{r normal, message = FALSE}
 # is y close to normally distributed?
-ggplot(customers, aes(x = yearlyAmountSpent)) + geom_histogram()
+
+## base R version
+hist(customers$yearlyAmountSpent)
+
+## simple ggplot
+ggplot(customers, aes(x = yearlyAmountSpent)) + 
+  geom_histogram(fill = "#5DBCD2", color = "black")
 ```
 <br> Yep, looking good.
 
 ```{r outlier plot, message = FALSE}
 # are there outliers?
-ggplot(customers, aes(x = Gender, y = yearlyAmountSpent)) + geom_boxplot(aes(fill = Gender))
+
+## base R 
+boxplot(yearlyAmountSpent ~ Gender, data = customers)
+
+## simple ggplot
+ggplot(customers, aes(x = Gender, y = yearlyAmountSpent)) + 
+  geom_boxplot(aes(fill = Gender))
 ```
 <br>It looks like we have a few, but they aren't super extreme. We should check that these are logical and not the result of measurement errors, but in this case, we'll just leave them.
 
@@ -113,6 +130,7 @@ ggpairs(customers)
 <br>Length of Membership and Time on App seem to be the most relevant factors. Let's investigate a bit more.
 
 ```{r plotting lm, message = FALSE}
+# simple ggplot
 ggplot(customers, aes(x = lengthOfMembership, y = yearlyAmountSpent, color = Gender)) + 
   geom_point() +
   geom_smooth(method = 'lm', se = FALSE)
@@ -126,7 +144,7 @@ ggplot(customers, aes(x = timeOnApp, y = yearlyAmountSpent, color = Gender)) +
 ## Training and Test Data
 
 ```{r train test}
-# set a random see so your "random" results are the same 
+# set a random seed so your "random" results are the same 
 set.seed(101) 
 
 # split up the sample (basically randomly assigns a booleans to a new column "sample")
@@ -143,7 +161,12 @@ test <- subset(customers, sample == FALSE)
 Now, it's time to model our data!
 ```{r lm}
 # we create the model using training data
-model <- lm(yearlyAmountSpent ~ avgSessionLength + timeOnApp + timeOnWebsite + lengthOfMembership + Gender, data = train)
+model <- lm(yearlyAmountSpent ~ avgSessionLength + 
+              timeOnApp + 
+              timeOnWebsite + 
+              lengthOfMembership + 
+              Gender, 
+            data = train)
 ```
 
 ## Prediction
