@@ -1,0 +1,171 @@
+---
+title: "Interactive Dashboards with R"
+author: "Marina Wyss"
+output: html_document
+---
+If you thought making plots in R was fun, then you'll love making dashboards.
+
+Here are some cool examples: 
+
+- https://committedtotape.shinyapps.io/sixtyninelovesongs/
+- https://jennadallen.shinyapps.io/pet-records-app/
+- https://vac-lshtm.shinyapps.io/ncov_tracker/
+
+And a great resource for more:
+
+- https://github.com/grabear/awesome-rshiny
+
+### Dashboards with Shiny 
+
+Most of the time, dashboards in R are done using **Shiny**.
+
+From the RStudio website:<br>
+*"Shiny is an R package that makes it easy to build interactive web apps straight from R. You can host standalone apps on a webpage or embed them in R Markdown documents or build dashboards. You can also extend your Shiny apps with CSS themes, htmlwidgets, and JavaScript actions."*
+
+While there is some new syntax to learn to use Shiny, if you know how to make a plot in R, you can make a Shiny app. 
+
+You have two options for building Shiny dashboards: [shinydashboard](https://shiny.rstudio.com/) or [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/). shinydashboard works through an R script and is quite flexible and customizable, but has slightly more complicated syntax. We'll use flexdashboard, which is fast, simple, and can be created from directly within an RMarkdown file.
+
+
+### Creating a Flexdashboard
+
+To get started, just click File > New File > RMarkdown > From Template > Flex Dashboard
+
+
+##### Layout
+Dashboards are divided into columns and rows, with output components delineated using level 3 markdown headers (###).
+
+To lay out charts using multiple columns you introduce a level 2 markdown header (--------------) for each column. Here is where you specify how large you want each column to be. 
+
+Tabs are denoted with a bunch of equals signs (=============)
+
+You can choose to orient dashboards row-wise rather than column-wise by specifying the *orientation: rows* in the top header.
+
+##### Interactivity
+
+If you want the dashboard to allow for interactive data (which we obviously do), add *runtime: shiny* to the top header.
+
+We will also add the {.sidebar} attribute to the first column of the dashboard to make it a host for Shiny input controls.
+
+In this sidebar we will create a space for the inputs we want the user to be able to access. There are options for drop downs, date selection, sliders, etc. All the widgets are here: https://shiny.rstudio.com/gallery/widget-gallery.html
+
+```{r, eval=FALSE}
+# simple drop down
+selectInput("outlet", # input name
+            label = "Select a news outlet:", # input display text
+            choices = sort(unique(data$publisher)), # input choices, made them alphabetical
+            selected = "AP") # default selection
+
+# select date rage
+dateRangeInput("dateRange", # input name
+               "Date range:", # input display text
+               start = "2020-03-01", # first date
+               end   = "2020-04-14") # last date
+
+```
+
+We will then incorporate these inputs into our interactive features.
+
+To display the interactive elements, we mostly code like normal. The main extra step is to include a *render* call around each element. For example, to render a plot:
+
+```{r, eval = FALSE}
+renderPlot({
+  
+  ggplot(data, aes(x, y)) +
+    geom_point()
+})
+```
+
+Or to render a box that just displays some values:
+
+```{r, eval=FALSE}
+renderValueBox({
+  
+  valueBox(
+    value = data$total
+    )
+  
+})
+```
+
+You can find documentation for all possible inputs and renders here: https://shiny.rstudio.com/reference/shiny/0.14/
+
+
+##### Hosting Online
+
+We can see and interact with our app locally by clicking *Run Document* where we would usually knit our file. 
+
+If we want to share the app online, RStudio offers [shinyapps.io](https://www.shinyapps.io/). It's fairly straight forward to do by following their instructions.
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+### So, what are we gunna put in our first dashboard?
+
+#### Data
+
+The data we will be using have been scraped from eight US news outlets since March 1, 2020: Breitbart, Fox, AP, Washington Times, NBC, NYT, Politico, and Buzzfeed. We collected all of the articles from the politics sections, and then filtered for articles that mentioned at least one candidate for US President (all of the Democrats as well as Trump). We then tallied how many articles mentioned a candidate per day to look at trends over time and by outlet. 
+
+```{r }
+data <- read.csv("data/article_data.csv")
+
+data <- data %>% 
+    mutate(date = as.Date(date)) 
+
+head(data)
+```
+
+#### Visualizations
+
+It can often be easier to first create your plots in R as you're used to, then adapt them to the flexdashboard syntax. For this example, we will create two plots: one showing a bar chart of candidate mentions by outlet:
+
+```{r warning=FALSE, message=FALSE}
+# total by publisher, just pick one for the baseline example
+pltData <- data %>% 
+  filter(date >= "2020-03-01" & publisher == "Breitbart") %>% 
+  select(-date, -publisher) %>% 
+  summarize_all(funs(sum)) %>% 
+  gather(candidate, count, Trump:Gabbard)
+
+pubPlot <- ggplot(pltData, aes(x = candidate,
+                    y = count, 
+                    fill = candidate)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 30),
+        axis.title.x = element_blank(),
+        legend.position = "none") 
+
+pubPlot
+```
+
+And one showing total candidate mentions over time: 
+
+```{r warning=FALSE, message=FALSE}
+# subsetting candidates, which will be useful for the dashboard
+candsToPlot <- c("Biden", "Sanders")
+
+# formatting data and filtering for date
+pltData <- data %>% 
+  select(-publisher) %>% 
+  gather(candidate, count, Trump:Gabbard) %>% 
+  group_by(candidate, date) %>% 
+  summarize(total_date = sum(count)) %>% 
+  filter(date >= "2020-03-01" & candidate %in% candsToPlot)
+
+timePlot <- ggplot(pltData,
+                   aes(x = date,
+                       y = total_date,
+                       group = candidate,
+                       color = candidate)) +
+  geom_line() +
+  labs(y = "Total Mentions By Candidate Per Date",
+       color = "Candidate") +
+  theme(axis.text.x = element_text(angle = 30),
+        axis.title.x = element_blank())
+
+timePlot
+```
+
+Now, let's move over to flexdashboard to make these interactive!
