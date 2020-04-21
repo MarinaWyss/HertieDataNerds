@@ -29,7 +29,9 @@ You have two options for building Shiny dashboards: [shinydashboard](https://shi
 
 ### Creating a Flexdashboard
 
-To get started, just click File > New File > RMarkdown > From Template > Flex Dashboard
+To get started, you first need to install flexdashboard (install.packages("flexdashboard")).
+
+Then, just click File > New File > RMarkdown > From Template > Flex Dashboard
 
 
 ##### Layout
